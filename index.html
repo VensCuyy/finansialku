@@ -1,0 +1,2206 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+        <title>FinansialKu - Kelola Keuangan</title>
+        <!-- Chart.js CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- Font Inter -->
+        <link
+            href="https://fonts.googles.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+
+        <style>
+            :root {
+                --bg-main: #f8fafc;
+                --card-dark: #0f172a;
+                --card-dark-sub: #1e293b;
+                --accent-yellow: #facc15;
+                --accent-green: #22c55e;
+                --accent-red: #ef4444;
+                --text-muted: #94a3b8;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family:
+                    "Inter",
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    sans-serif;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            body {
+                background-color: #0f172a;
+                display: flex;
+                justify-content: center;
+                min-height: 100vh;
+                color: #1e293b;
+            }
+
+            .app-viewport {
+                width: 100%;
+                max-width: 430px;
+                background-color: var(--bg-main);
+                min-height: 100vh;
+                position: relative;
+                padding-bottom: 90px;
+                box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Screen Management */
+            .screen {
+                display: none;
+                animation: fadeIn 0.25s ease-in-out;
+            }
+
+            .screen.active {
+                display: block;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(6px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Auth Screen (Login & Register) */
+            #login-screen {
+                background: var(--card-dark);
+                color: white;
+                min-height: 100vh;
+                padding: 30px 24px;
+                display: none;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            #login-screen.active {
+                display: flex;
+            }
+
+            .login-brand {
+                text-align: center;
+                margin-bottom: 24px;
+            }
+
+            .login-brand .logo-icon {
+                width: 60px;
+                height: 60px;
+                background: var(--accent-yellow);
+                border-radius: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 16px;
+                font-size: 28px;
+                font-weight: 800;
+                color: var(--card-dark);
+            }
+
+            .login-brand h1 {
+                font-size: 22px;
+                font-weight: 700;
+                color: #ffffff;
+            }
+
+            .login-brand p {
+                font-size: 13px;
+                color: var(--text-muted);
+                margin-top: 4px;
+            }
+
+            .auth-tabs {
+                display: flex;
+                background: var(--card-dark-sub);
+                padding: 4px;
+                border-radius: 12px;
+                margin-bottom: 20px;
+                border: 1px solid #334155;
+            }
+
+            .auth-tab-btn {
+                flex: 1;
+                padding: 10px;
+                border: none;
+                background: transparent;
+                color: var(--text-muted);
+                font-weight: 600;
+                font-size: 13px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .auth-tab-btn.active {
+                background: var(--accent-yellow);
+                color: var(--card-dark);
+            }
+
+            .input-group {
+                margin-bottom: 14px;
+            }
+
+            .input-group label {
+                display: block;
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--text-muted);
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .input-field {
+                width: 100%;
+                padding: 12px 14px;
+                background: var(--card-dark-sub);
+                border: 1px solid #334155;
+                border-radius: 12px;
+                color: white;
+                font-size: 14px;
+                outline: none;
+                transition: all 0.2s;
+            }
+
+            .input-field:focus {
+                border-color: var(--accent-yellow);
+            }
+
+            .btn-primary {
+                width: 100%;
+                padding: 14px;
+                background: var(--accent-yellow);
+                border: none;
+                border-radius: 12px;
+                color: var(--card-dark);
+                font-weight: 700;
+                font-size: 15px;
+                cursor: pointer;
+                margin-top: 10px;
+                transition: opacity 0.2s;
+            }
+
+            .btn-primary:active {
+                opacity: 0.85;
+            }
+
+            /* Dashboard Header */
+            .header-card {
+                background: var(--card-dark);
+                color: white;
+                padding: 24px 20px 20px 20px;
+                border-bottom-left-radius: 28px;
+                border-bottom-right-radius: 28px;
+                box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+            }
+
+            .top-user-bar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .user-profile {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .avatar {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: var(--accent-yellow);
+                color: var(--card-dark);
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                overflow: hidden;
+                background-size: cover;
+                background-position: center;
+                position: relative;
+            }
+
+            .avatar-upload-btn {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                background: var(--card-dark);
+                color: white;
+                border: 2px solid white;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                cursor: pointer;
+            }
+
+            /* Chat AI Interface Styles */
+            .chat-container {
+                display: flex;
+                flex-direction: column;
+                height: calc(100vh - 180px);
+                max-height: 520px;
+            }
+
+            .chat-messages {
+                flex: 1;
+                overflow-y: auto;
+                padding: 10px 0;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .chat-bubble {
+                max-width: 85%;
+                padding: 12px 14px;
+                border-radius: 16px;
+                font-size: 13px;
+                line-height: 1.5;
+                word-break: break-word;
+            }
+
+            .chat-bubble.user {
+                align-self: flex-end;
+                background: #0f172a;
+                color: white;
+                border-bottom-right-radius: 4px;
+            }
+
+            .chat-bubble.ai {
+                align-self: flex-start;
+                background: #f1f5f9;
+                color: #0f172a;
+                border: 1px solid #e2e8f0;
+                border-bottom-left-radius: 4px;
+            }
+
+            .chat-input-bar {
+                display: flex;
+                gap: 8px;
+                padding-top: 10px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .chat-chip-container {
+                display: flex;
+                gap: 6px;
+                overflow-x: auto;
+                padding-bottom: 8px;
+                margin-bottom: 8px;
+                scrollbar-width: none;
+            }
+
+            .chat-chip {
+                white-space: nowrap;
+                background: #e2e8f0;
+                color: #334155;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 600;
+                cursor: pointer;
+                border: none;
+            }
+
+            .chat-chip:hover {
+                background: var(--accent-yellow);
+                color: #0f172a;
+            }
+
+            .user-info h4 {
+                font-size: 14px;
+                font-weight: 600;
+                color: #fff;
+            }
+
+            .user-info span {
+                font-size: 11px;
+                color: var(--text-muted);
+            }
+
+            .sync-status {
+                font-size: 10px;
+                padding: 4px 8px;
+                border-radius: 20px;
+                background: rgba(34, 197, 94, 0.15);
+                color: var(--accent-green);
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                cursor: pointer;
+            }
+
+            .portfolio-title {
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                color: var(--text-muted);
+                text-transform: uppercase;
+            }
+
+            .total-amount-row {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                margin: 6px 0 18px;
+            }
+
+            .currency-symbol {
+                font-size: 20px;
+                font-weight: 800;
+                color: var(--accent-yellow);
+                margin-right: 4px;
+            }
+
+            .main-balance {
+                font-size: 30px;
+                font-weight: 800;
+                color: var(--accent-yellow);
+                letter-spacing: -0.5px;
+            }
+
+            .growth-badge {
+                background: rgba(34, 197, 94, 0.18);
+                color: var(--accent-green);
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                background: var(--card-dark-sub);
+                padding: 14px;
+                border-radius: 16px;
+                border: 1px solid #334155;
+            }
+
+            .stat-box small {
+                font-size: 10px;
+                color: var(--text-muted);
+                font-weight: 600;
+                text-transform: uppercase;
+                display: block;
+                margin-bottom: 2px;
+            }
+
+            .stat-box .amount {
+                font-size: 15px;
+                font-weight: 700;
+            }
+
+            .amount.green {
+                color: var(--accent-green);
+            }
+            .amount.red {
+                color: var(--accent-red);
+            }
+
+            /* Anti-Boros Widget Banner */
+            .anti-boros-banner {
+                margin: 16px 20px 0;
+                padding: 14px 16px;
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: all 0.3s;
+            }
+
+            .banner-safe {
+                background: #f0fdf4;
+                border: 1px solid #bbf7d0;
+                color: #166534;
+            }
+
+            .banner-warning {
+                background: #fffbebfb;
+                border: 1px solid #fde68a;
+                color: #92400e;
+            }
+
+            .banner-danger {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                color: #991b1b;
+            }
+
+            .banner-left {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .banner-icon {
+                font-size: 20px;
+            }
+
+            .banner-title {
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            .banner-sub {
+                font-size: 11px;
+                opacity: 0.85;
+            }
+
+            /* Content Cards */
+            .content-container {
+                padding: 16px 20px;
+            }
+
+            .section-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+            }
+
+            .section-title {
+                font-size: 15px;
+                font-weight: 700;
+                color: #0f172a;
+            }
+
+            .card {
+                background: white;
+                border-radius: 18px;
+                padding: 16px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+                border: 1px solid #e2e8f0;
+                margin-bottom: 16px;
+            }
+
+            /* Item List UI */
+            .trx-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            .trx-item:last-child {
+                border-bottom: none;
+            }
+
+            .trx-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .trx-icon-bg {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+            }
+
+            .icon-in {
+                background: #dcfce7;
+                color: #15803d;
+            }
+            .icon-out {
+                background: #fee2e2;
+                color: #b91c1c;
+            }
+
+            .trx-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: #0f172a;
+            }
+
+            .trx-date {
+                font-size: 11px;
+                color: #64748b;
+                margin-top: 2px;
+            }
+
+            .trx-right {
+                text-align: right;
+            }
+
+            .trx-val {
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .badge-cat {
+                display: inline-block;
+                font-size: 10px;
+                padding: 2px 8px;
+                border-radius: 12px;
+                background: #f1f5f9;
+                color: #475569;
+                font-weight: 600;
+                margin-top: 3px;
+            }
+
+            /* Forms Elements */
+            .form-control {
+                width: 100%;
+                padding: 12px;
+                border-radius: 10px;
+                border: 1px solid #cbd5e1;
+                font-size: 13px;
+                outline: none;
+                margin-top: 4px;
+                background: #f8fafc;
+            }
+
+            .form-control:focus {
+                border-color: #0f172a;
+                background: white;
+            }
+
+            .btn-secondary {
+                width: 100%;
+                padding: 12px;
+                background: #0f172a;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-weight: 600;
+                font-size: 13px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+            /* Bottom Navigation Bar */
+            .bottom-nav {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                max-width: 430px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border-top: 1px solid #e2e8f0;
+                display: flex;
+                justify-content: space-around;
+                padding: 10px 0 12px;
+                z-index: 100;
+            }
+
+            .nav-btn {
+                border: none;
+                background: transparent;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 3px;
+                color: #64748b;
+                font-size: 11px;
+                font-weight: 600;
+                cursor: pointer;
+                width: 20%;
+            }
+
+            .nav-btn .nav-icon {
+                font-size: 20px;
+                transition: transform 0.2s;
+            }
+
+            .nav-btn.active {
+                color: #0f172a;
+            }
+
+            .nav-btn.active .nav-icon {
+                transform: translateY(-2px);
+            }
+
+            /* Toast Notification */
+            .toast {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #0f172a;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                z-index: 200;
+                display: none;
+            }
+
+            /* Progress bar */
+            .progress-bg {
+                width: 100%;
+                height: 8px;
+                background: #e2e8f0;
+                border-radius: 10px;
+                overflow: hidden;
+                margin-top: 8px;
+            }
+
+            .progress-fill {
+                height: 100%;
+                background: var(--accent-yellow);
+                border-radius: 10px;
+                transition: width 0.4s ease;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="app-viewport">
+            <!-- Toast Notification -->
+            <div id="toast" class="toast">Pesan terkirim</div>
+
+            <!-- SCREEN 1: LOGIN / DAFTAR AKUN -->
+            <div id="login-screen" class="screen active">
+                <div class="login-brand">
+                    <div class="logo-icon">F</div>
+                    <h1>FinansialKu - Kelola Keuangan</h1>
+                    <p>Aplikasi Keuangan & Portofolio</p>
+                </div>
+
+                <!-- Toggle Tab Login / Register -->
+                <div class="auth-tabs">
+                    <button
+                        type="button"
+                        id="tab-btn-login"
+                        class="auth-tab-btn active"
+                        onclick="setAuthMode('login')"
+                    >
+                        Masuk
+                    </button>
+                    <button
+                        type="button"
+                        id="tab-btn-register"
+                        class="auth-tab-btn"
+                        onclick="setAuthMode('register')"
+                    >
+                        Daftar Akun Baru
+                    </button>
+                </div>
+
+                <form
+                    onsubmit="
+                        event.preventDefault();
+                        handleAuthSubmit();
+                    "
+                >
+                    <div class="input-group">
+                        <label>Username</label>
+                        <input
+                            type="text"
+                            id="auth-username"
+                            class="input-field"
+                            placeholder="Masukkan username"
+                            required
+                        />
+                    </div>
+
+                    <div class="input-group">
+                        <label>PIN (4 - 6 Angka)</label>
+                        <input
+                            type="password"
+                            id="auth-pin"
+                            class="input-field"
+                            placeholder="Masukkan PIN"
+                            required
+                            maxlength="6"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        id="auth-submit-btn"
+                        class="btn-primary"
+                    >
+                        MASUK KE APLIKASI
+                    </button>
+                </form>
+            </div>
+
+            <!-- MAIN APP CONTAINER -->
+            <div id="app-main" style="display: none">
+                <!-- SCREEN: TAB DASHBOARD HOME -->
+                <div id="tab-home" class="screen active">
+                    <!-- HEADER CARD UI (HANYA DITAMPILKAN DI MENU HOME) -->
+                    <div class="header-card">
+                        <div class="top-user-bar">
+                            <div class="user-profile">
+                                <div class="avatar" id="user-avatar">A</div>
+                                <div class="user-info">
+                                    <h4 id="user-display-name">Halo, User</h4>
+                                    <span>Akun Terverifikasi</span>
+                                </div>
+                            </div>
+                            <div
+                                class="sync-status"
+                                onclick="switchTab('tab-sheet-sync')"
+                            >
+                                <span
+                                    style="
+                                        display: inline-block;
+                                        width: 6px;
+                                        height: 6px;
+                                        background: var(--accent-green);
+                                        border-radius: 50%;
+                                    "
+                                ></span>
+                                <span id="header-sheet-status"
+                                    >Spreadsheet Connected</span
+                                >
+                            </div>
+                        </div>
+
+                        <div class="portfolio-title">
+                            TOTAL NILAI PORTOFOLIO / SALDO
+                        </div>
+                        <div class="total-amount-row">
+                            <div>
+                                <span class="currency-symbol">Rp</span>
+                                <span class="main-balance" id="val-saldo"
+                                    >0</span
+                                >
+                            </div>
+                            <div class="growth-badge" id="val-pertumbuhan">
+                                +0.0%
+                            </div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <small>Total Pemasukan</small>
+                                <div class="amount green" id="val-masuk">
+                                    Rp 0
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <small>Total Pengeluaran</small>
+                                <div class="amount red" id="val-keluar">
+                                    Rp 0
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ANTI-BOROS BANNER INDICATOR (DI MENU HOME) -->
+                    <div
+                        id="anti-boros-banner"
+                        class="anti-boros-banner banner-safe"
+                    >
+                        <div class="banner-left">
+                            <span class="banner-icon" id="boros-icon">🛡️</span>
+                            <div>
+                                <div class="banner-title" id="boros-title">
+                                    Status Hemat: Safe
+                                </div>
+                                <div class="banner-sub" id="boros-sub">
+                                    Pengeluaran masih dalam batas wajar.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-container">
+                        <!-- Progress Limit Boros -->
+                        <div class="card">
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                "
+                            >
+                                <span
+                                    style="
+                                        font-size: 12px;
+                                        font-weight: 700;
+                                        color: #475569;
+                                    "
+                                    >Batas Anggaran Hemat</span
+                                >
+                                <span
+                                    style="font-size: 12px; font-weight: 700"
+                                    id="limit-ratio-text"
+                                    >0 / 0</span
+                                >
+                            </div>
+                            <div class="progress-bg">
+                                <div
+                                    class="progress-fill"
+                                    id="limit-progress-bar"
+                                    style="width: 0%"
+                                ></div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Chart Preview -->
+                        <div class="card">
+                            <div class="section-header">
+                                <span class="section-title"
+                                    >Rasio Keuangan</span
+                                >
+                                <small
+                                    style="
+                                        color: var(--text-muted);
+                                        font-size: 11px;
+                                    "
+                                    >Bulan Ini</small
+                                >
+                            </div>
+                            <div style="max-height: 180px; position: relative">
+                                <canvas id="chartHomeDoughnut"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- List Transaksi Terakhir -->
+                        <div class="section-header">
+                            <span class="section-title">Riwayat Transaksi</span>
+                            <button
+                                onclick="switchTab('tab-trx')"
+                                style="
+                                    border: none;
+                                    background: none;
+                                    color: #2563eb;
+                                    font-size: 12px;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                "
+                            >
+                                + Tambah
+                            </button>
+                        </div>
+
+                        <div class="card" id="recent-trx-list">
+                            <!-- Dynamic list -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN: TAB CATAT TRANSAKSI -->
+                <div id="tab-trx" class="screen content-container">
+                    <div class="card">
+                        <div class="section-title" style="margin-bottom: 14px">
+                            Catat Transaksi Baru
+                        </div>
+
+                        <form
+                            onsubmit="
+                                event.preventDefault();
+                                saveTransaction();
+                            "
+                        >
+                            <div
+                                class="input-group"
+                                style="margin-bottom: 12px"
+                            >
+                                <label style="color: #475569"
+                                    >Tipe Transaksi</label
+                                >
+                                <select id="trx-tipe" class="form-control">
+                                    <option value="pengeluaran">
+                                        Pengeluaran (-)
+                                    </option>
+                                    <option value="pemasukan">
+                                        Pemasukan (+)
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div
+                                class="input-group"
+                                style="margin-bottom: 12px"
+                            >
+                                <label style="color: #475569">Kategori</label>
+                                <input
+                                    type="text"
+                                    id="trx-kategori"
+                                    class="form-control"
+                                    placeholder="Makan, Gaji, Belanja, Investasi..."
+                                    list="category-suggestions"
+                                />
+                                <datalist id="category-suggestions">
+                                    <option value="Makanan & Minuman"></option>
+                                    <option value="Gaji / Utama"></option>
+                                    <option value="Investasi / Saham"></option>
+                                    <option value="Hiburan & Belanja"></option>
+                                    <option value="Tagihan & Listrik"></option>
+                                </datalist>
+                            </div>
+
+                            <div
+                                class="input-group"
+                                style="margin-bottom: 12px"
+                            >
+                                <label style="color: #475569"
+                                    >Jumlah Nominal (Rp)</label
+                                >
+                                <input
+                                    type="number"
+                                    id="trx-jumlah"
+                                    class="form-control"
+                                    placeholder="Contoh: 50000"
+                                    required
+                                />
+                            </div>
+
+                            <div
+                                class="input-group"
+                                style="margin-bottom: 12px"
+                            >
+                                <label style="color: #475569"
+                                    >Catatan / Keterangan</label
+                                >
+                                <input
+                                    type="text"
+                                    id="trx-catatan"
+                                    class="form-control"
+                                    placeholder="Contoh: Makan siang bakso"
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="btn-primary"
+                                style="margin-top: 10px"
+                            >
+                                Simpan & Sync ke Spreadsheet
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- SCREEN: TAB PERSENTASE & ANALISIS -->
+                <div id="tab-persentase" class="screen content-container">
+                    <div class="card">
+                        <div class="section-title" style="margin-bottom: 8px">
+                            Persentase Pemasukan & Pengeluaran
+                        </div>
+                        <p
+                            style="
+                                font-size: 12px;
+                                color: #64748b;
+                                margin-bottom: 16px;
+                            "
+                        >
+                            Analisis porsi cashflow secara visual
+                        </p>
+                        <div style="max-height: 220px">
+                            <canvas id="chartAnalysisBar"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-title" style="margin-bottom: 12px">
+                            Rincian Porsi Kebocoran
+                        </div>
+                        <div id="category-breakdown-list">
+                            <!-- Breakdown persentase per kategori -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN: TAB AI CHAT KONSULTAN KEUANGAN -->
+                <div id="tab-aichat" class="screen content-container">
+                    <div class="card" style="margin-bottom: 10px">
+                        <div
+                            style="
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                            "
+                        >
+                            <div
+                                style="
+                                    width: 36px;
+                                    height: 36px;
+                                    background: #facc15;
+                                    border-radius: 10px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 20px;
+                                "
+                            >
+                                🤖
+                            </div>
+                            <div>
+                                <div
+                                    class="section-title"
+                                    style="font-size: 14px"
+                                >
+                                    PinAI Advisor
+                                </div>
+                                <p style="font-size: 11px; color: #64748b">
+                                    Asisten Cerdas Pengelola Keuangan (Powered
+                                    by Groq Llama 3.3)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chat-container">
+                        <!-- Recommended Chips -->
+                        <div class="chat-chip-container">
+                            <button
+                                type="button"
+                                class="chat-chip"
+                                onclick="
+                                    useQuickQuestion(
+                                        'Bagaimana cara membuat anggaran 50/30/20?'
+                                    )
+                                "
+                            >
+                                💡 Aturan 50/30/20
+                            </button>
+                            <button
+                                type="button"
+                                class="chat-chip"
+                                onclick="
+                                    useQuickQuestion(
+                                        'Bagaimana cara menghemat uang bulanan bagi pemula?'
+                                    )
+                                "
+                            >
+                                💰 Tips Hemat Pemula
+                            </button>
+                            <button
+                                type="button"
+                                class="chat-chip"
+                                onclick="
+                                    useQuickQuestion(
+                                        'Bagaimana langkah menyiapkan dana darurat?'
+                                    )
+                                "
+                            >
+                                🛡️ Dana Darurat
+                            </button>
+                        </div>
+
+                        <!-- Chat messages area -->
+                        <div class="chat-messages" id="chat-messages-list">
+                            <div class="chat-bubble ai">
+                                Halo! Saya <strong>PinAI Advisor</strong>. Ada
+                                yang bisa saya bantu terkait perencanaan
+                                keuangan, tips hemat, investasi, atau strategi
+                                anggaran hari ini? 😊
+                            </div>
+                        </div>
+
+                        <!-- Input Area -->
+                        <div class="chat-input-bar">
+                            <input
+                                type="text"
+                                id="ai-chat-input"
+                                class="form-control"
+                                style="margin-top: 0"
+                                placeholder="Tanyakan seputar keuangan..."
+                                onkeypress="
+                                    if (event.key === 'Enter')
+                                        sendAIChatMessage();
+                                "
+                            />
+                            <button
+                                onclick="sendAIChatMessage()"
+                                class="btn-primary"
+                                style="
+                                    margin-top: 0;
+                                    width: auto;
+                                    padding: 0 16px;
+                                    white-space: nowrap;
+                                "
+                            >
+                                Kirim
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN: TAB FITUR ANTI-BOROS -->
+                <div id="tab-antiboros" class="screen content-container">
+                    <div class="card">
+                        <div class="section-title" style="margin-bottom: 6px">
+                            🛡 Fitur Proteksi Anti-Boros
+                        </div>
+                        <p
+                            style="
+                                font-size: 12px;
+                                color: #64748b;
+                                margin-bottom: 16px;
+                            "
+                        >
+                            Setel batas maksimal pengeluaran bulanan Anda.
+                            Sistem akan memberikan alarm otomatis jika mendekati
+                            batas.
+                        </p>
+
+                        <div class="input-group">
+                            <label style="color: #475569"
+                                >Batas Pengeluaran Maksimal (Rp)</label
+                            >
+                            <input
+                                type="number"
+                                id="limit-budget-input"
+                                class="form-control"
+                                placeholder="Misal: 2000000"
+                            />
+                        </div>
+
+                        <button
+                            onclick="saveBudgetLimitSetting()"
+                            class="btn-primary"
+                        >
+                            Update Limit Anti-Boros
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SCREEN: SETTING SPREADSHEET -->
+                <div id="tab-sheet-sync" class="screen content-container">
+                    <div class="card">
+                        <div class="section-title" style="margin-bottom: 8px">
+                            📊 Integrasi Google Spreadsheet
+                        </div>
+                        <p
+                            style="
+                                font-size: 12px;
+                                color: #64748b;
+                                margin-bottom: 14px;
+                            "
+                        >
+                            Aplikasi ini terhubung secara otomatis ke Google
+                            Spreadsheet utama yang telah dikonfigurasi oleh
+                            admin/pembuat aplikasi.
+                        </p>
+
+                        <div
+                            style="
+                                background: #f1f5f9;
+                                padding: 12px;
+                                border-radius: 10px;
+                                font-size: 12px;
+                                color: #334155;
+                            "
+                        >
+                            <strong>Status Server:</strong>
+                            <span
+                                id="sync-info-status"
+                                style="
+                                    color: var(--accent-green);
+                                    font-weight: 700;
+                                "
+                                >Terhubung Otomatis</span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN: TAB AKUN & PROFIL -->
+                <div id="tab-account" class="screen content-container">
+                    <div
+                        class="card"
+                        style="text-align: center; padding: 24px 16px"
+                    >
+                        <!-- Avatar dengan tombol ubah foto -->
+                        <div
+                            style="
+                                position: relative;
+                                width: 80px;
+                                height: 80px;
+                                margin: 0 auto 12px;
+                            "
+                        >
+                            <div
+                                class="avatar"
+                                id="account-avatar"
+                                style="
+                                    width: 80px;
+                                    height: 80px;
+                                    font-size: 28px;
+                                    font-weight: 800;
+                                "
+                            >
+                                A
+                            </div>
+                            <label
+                                for="avatar-file-input"
+                                class="avatar-upload-btn"
+                                title="Ubah Foto Profil"
+                                >📷</label
+                            >
+                            <input
+                                type="file"
+                                id="avatar-file-input"
+                                accept="image/*"
+                                style="display: none"
+                                onchange="handleProfilePicUpload(event)"
+                            />
+                        </div>
+
+                        <h3
+                            id="account-display-name"
+                            style="
+                                font-size: 18px;
+                                font-weight: 700;
+                                color: #0f172a;
+                            "
+                        >
+                            User
+                        </h3>
+                        <p
+                            style="
+                                font-size: 12px;
+                                color: #64748b;
+                                margin-top: 2px;
+                            "
+                        >
+                            Terhubung ke Google Spreadsheet
+                        </p>
+                    </div>
+
+                    <!-- Ubah Username Form -->
+                    <div class="card">
+                        <div class="section-title" style="margin-bottom: 10px">
+                            ✏️ Pengaturan Profil & Username
+                        </div>
+                        <div class="input-group" style="margin-bottom: 10px">
+                            <label style="color: #475569">Ganti Username</label>
+                            <input
+                                type="text"
+                                id="edit-username-input"
+                                class="form-control"
+                                placeholder="Masukkan username baru"
+                            />
+                        </div>
+                        <button
+                            onclick="saveNewUsername()"
+                            class="btn-primary"
+                            style="margin-top: 4px"
+                        >
+                            Simpan Username
+                        </button>
+                    </div>
+
+                    <!-- Fitur CS via Email -->
+                    <div class="card">
+                        <div class="section-title" style="margin-bottom: 6px">
+                            🎧 Layanan Bantuan / CS (Email)
+                        </div>
+                        <p
+                            style="
+                                font-size: 12px;
+                                color: #64748b;
+                                margin-bottom: 12px;
+                            "
+                        >
+                            Ada kendala atau pertanyaan? Kirim pesan langsung ke
+                            tim Customer Service kami.
+                        </p>
+
+                        <div class="input-group" style="margin-bottom: 10px">
+                            <label style="color: #475569">Subjek Bantuan</label>
+                            <input
+                                type="text"
+                                id="cs-subject-input"
+                                class="form-control"
+                                placeholder="Contoh: Kendala Sinkronisasi Spreadsheet"
+                            />
+                        </div>
+
+                        <div class="input-group" style="margin-bottom: 10px">
+                            <label style="color: #475569"
+                                >Pesan / Pertanyaan</label
+                            >
+                            <textarea
+                                id="cs-message-input"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Tuliskan kendala Anda secara rinci..."
+                            ></textarea>
+                        </div>
+
+                        <button
+                            onclick="sendCSMail()"
+                            class="btn-secondary"
+                            style="margin-top: 4px; background: #2563eb"
+                        >
+                            ✉️ Kirim Ke Email CS
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-title" style="margin-bottom: 12px">
+                            Detail Pengguna
+                        </div>
+                        <div
+                            style="
+                                font-size: 13px;
+                                color: #334155;
+                                line-height: 2;
+                            "
+                        >
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    border-bottom: 1px solid #f1f5f9;
+                                    padding-bottom: 6px;
+                                "
+                            >
+                                <span style="color: #64748b">Username</span>
+                                <strong id="account-username-text">-</strong>
+                            </div>
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    padding-top: 6px;
+                                "
+                            >
+                                <span style="color: #64748b"
+                                    >Spreadsheet Sync</span
+                                >
+                                <span
+                                    id="account-sheet-status"
+                                    style="font-weight: 600; color: #0f172a"
+                                    >Tersambung</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-title" style="margin-bottom: 10px">
+                            Aksi Akun
+                        </div>
+                        <button
+                            onclick="switchTab('tab-sheet-sync')"
+                            class="btn-secondary"
+                            style="margin-top: 0; margin-bottom: 8px"
+                        >
+                            Pengaturan Integration Sheet
+                        </button>
+                        <button
+                            onclick="handleLogout()"
+                            style="
+                                width: 100%;
+                                padding: 12px;
+                                background: #fee2e2;
+                                color: #b91c1c;
+                                border: none;
+                                border-radius: 10px;
+                                font-weight: 700;
+                                font-size: 13px;
+                                cursor: pointer;
+                            "
+                        >
+                            Keluar dari Akun
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BOTTOM NAVIGATION BAR -->
+                <div class="bottom-nav">
+                    <button
+                        class="nav-btn active"
+                        onclick="switchTab('tab-home', this)"
+                    >
+                        <span class="nav-icon">🏠</span>
+                        <span>Home</span>
+                    </button>
+
+                    <button
+                        class="nav-btn"
+                        onclick="switchTab('tab-trx', this)"
+                    >
+                        <span class="nav-icon">➕</span>
+                        <span>Catat</span>
+                    </button>
+
+                    <button
+                        class="nav-btn"
+                        onclick="switchTab('tab-aichat', this)"
+                    >
+                        <span class="nav-icon">🤖</span>
+                        <span>PinAI</span>
+                    </button>
+
+                    <button
+                        class="nav-btn"
+                        onclick="switchTab('tab-persentase', this)"
+                    >
+                        <span class="nav-icon">📊</span>
+                        <span>Persen</span>
+                    </button>
+
+                    <button
+                        class="nav-btn"
+                        onclick="switchTab('tab-account', this)"
+                    >
+                        <span class="nav-icon">👤</span>
+                        <span>Akun</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 🔴 URL GOOGLE APPS SPREADSHEET BACKEND
+            const DEFAULT_SCRIPT_URL =
+                "https://script.google.com/macros/s/AKfycbyQRrvBJeOOcdF3_O_q1-Buaqeb0ZCshOU3SIFnnkjA4EWxk109p-TfmR2z84dpAbYj/exec";
+            const CS_EMAIL_ADDRESS = "saran.dan.kritik65@gmail.com";
+
+            // --- STATE MANAGEMENT ---
+            let appData = {
+                isLoggedIn: false,
+                username: "",
+                profilePic: "",
+                budgetLimit: 2500000,
+                scriptUrl: DEFAULT_SCRIPT_URL,
+                transactions: [],
+                registeredUsers: []
+            };
+
+            let currentAuthMode = "login";
+            let chartDoughnutInstance = null;
+            let chartBarInstance = null;
+
+            window.onload = function () {
+                loadLocalStore();
+                appData.scriptUrl = DEFAULT_SCRIPT_URL;
+
+                if (appData.isLoggedIn && appData.username) {
+                    applyLoggedInState();
+                }
+            };
+
+            function showToast(msg) {
+                const t = document.getElementById("toast");
+                t.innerText = msg;
+                t.style.display = "block";
+                setTimeout(() => {
+                    t.style.display = "none";
+                }, 2500);
+            }
+
+            function formatRp(num) {
+                return new Intl.NumberFormat("id-ID").format(num);
+            }
+
+            function handleProfilePicUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                if (file.size > 2 * 1024 * 1024) {
+                    alert("Ukuran foto maksimal 2MB!");
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    appData.profilePic = e.target.result;
+                    saveLocalStore();
+                    updateAvatarDisplay();
+                    showToast("Foto profil berhasil diperbarui!");
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function updateAvatarDisplay() {
+                const user = appData.username || "User";
+                const initial = user.charAt(0).toUpperCase();
+
+                const userAvatarEl = document.getElementById("user-avatar");
+                const accountAvatarEl =
+                    document.getElementById("account-avatar");
+
+                if (appData.profilePic) {
+                    userAvatarEl.style.backgroundImage = `url(${appData.profilePic})`;
+                    userAvatarEl.innerText = "";
+                    accountAvatarEl.style.backgroundImage = `url(${appData.profilePic})`;
+                    accountAvatarEl.innerText = "";
+                } else {
+                    userAvatarEl.style.backgroundImage = "none";
+                    userAvatarEl.innerText = initial;
+                    accountAvatarEl.style.backgroundImage = "none";
+                    accountAvatarEl.innerText = initial;
+                }
+            }
+
+            function saveNewUsername() {
+                const newUsername = document
+                    .getElementById("edit-username-input")
+                    .value.trim();
+                if (!newUsername) {
+                    alert("Username baru tidak boleh kosong!");
+                    return;
+                }
+
+                if (appData.registeredUsers) {
+                    const idx = appData.registeredUsers.findIndex(
+                        u =>
+                            u.username.toLowerCase() ===
+                            appData.username.toLowerCase()
+                    );
+                    if (idx !== -1) {
+                        appData.registeredUsers[idx].username = newUsername;
+                    }
+                }
+
+                appData.username = newUsername;
+                saveLocalStore();
+                applyLoggedInState();
+                document.getElementById("edit-username-input").value = "";
+                showToast("Username berhasil diubah!");
+            }
+
+            function sendCSMail() {
+                const subject =
+                    document.getElementById("cs-subject-input").value.trim() ||
+                    "Bantuan FinansialKu";
+                const message = document
+                    .getElementById("cs-message-input")
+                    .value.trim();
+
+                if (!message) {
+                    alert(
+                        "Silakan tuliskan pesan atau pertanyaan Anda terlebih dahulu!"
+                    );
+                    return;
+                }
+
+                const bodyText = `Halo CS FinansialKu,%0D%0A%0D%0AUser: ${appData.username}%0D%0APesan:%0D%0A${encodeURIComponent(message)}`;
+                const mailtoUrl = `mailto:${CS_EMAIL_ADDRESS}?subject=${encodeURIComponent(subject)}&body=${bodyText}`;
+
+                window.location.href = mailtoUrl;
+                showToast("Membuka aplikasi Email...");
+            }
+
+            // --- FITUR AI CHAT (GROQ  LOGIC) ---
+            function useQuickQuestion(qText) {
+                document.getElementById("ai-chat-input").value = qText;
+                sendAIChatMessage();
+            }
+            async function sendAIChatMessage() {
+                const inputEl = document.getElementById("ai-chat-input");
+                const userText = inputEl.value.trim();
+                if (!userText) return;
+
+                // 1. Cek apakah API Key sudah tersimpan di browser
+                let Key = localStorage.getItem("GROQ_API_KEY") || "";
+
+                // 2. Jika belum ada, tampilkan pop-up input ke pengguna
+                if (!Key) {
+                    Key = prompt("Masukkan API Key Groq Anda (gsk_...):");
+                    if (Key) {
+                        localStorage.setItem("GROQ_API_KEY", Key.trim());
+                    } else {
+                        alert(
+                            "API Key diperlukan untuk menggunakan fitur AI Chat!"
+                        );
+                        return;
+                    }
+                }
+
+                appendChatMessage("user", userText);
+                inputEl.value = "";
+
+                const loadingId = appendChatLoading();
+
+                const systemPrompt =
+                    "Anda adalah PinAI Advisor, konsultan keuangan pribadi cerdas dari aplikasi FinansialKu. Berikan jawaban yang ramah, taktis, dan mudah dipahami.";
+                const Url = "https://api.groq.com/openai/v1/chat/completions";
+
+                const payload = {
+                    model: "openai/gpt-oss-120b",
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        { role: "user", content: userText }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1024
+                };
+
+                try {
+                    const response = await fetch(Url, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${Key.trim()}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    removeChatMessage(loadingId);
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            // Jika key salah/expired, hapus dari penyimpanan agar pengguna diminta input ulang
+                            localStorage.removeItem("GROQ_API_KEY");
+                            appendChatMessage(
+                                "ai",
+                                "⚠️ <strong>API Key tidak valid!</strong> Silakan coba kirim pesan lagi untuk memasukkan key baru."
+                            );
+                        } else {
+                            appendChatMessage(
+                                "ai",
+                                `⚠️ <strong>Error:</strong> ${data.error?.message || response.status}`
+                            );
+                        }
+                        return;
+                    }
+
+                    const aiReply =
+                        data.choices?.[0]?.message?.content ||
+                        "Maaf, tidak ada respon.";
+                    appendChatMessage("ai", aiReply);
+                } catch (err) {
+                    console.error("AI Error:", err);
+                    removeChatMessage(loadingId);
+                    appendChatMessage(
+                        "ai",
+                        "Gagal terhubung ke server AI. Cek koneksi internet Anda."
+                    );
+                }
+            }
+
+            function appendChatMessage(sender, text) {
+                const chatList = document.getElementById("chat-messages-list");
+                const bubble = document.createElement("div");
+                bubble.className = `chat-bubble ${sender}`;
+                bubble.innerHTML = text
+                    .replace(/\n/g, "<br>")
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+                chatList.appendChild(bubble);
+                chatList.scrollTop = chatList.scrollHeight;
+            }
+
+            function appendChatLoading() {
+                const chatList = document.getElementById("chat-messages-list");
+                const id = "loading-" + Date.now();
+                const bubble = document.createElement("div");
+                bubble.id = id;
+                bubble.className = "chat-bubble ai";
+                bubble.innerText = "PinAI sedang berpikir... 🤖";
+                chatList.appendChild(bubble);
+                chatList.scrollTop = chatList.scrollHeight;
+                return id;
+            }
+
+            function removeChatMessage(id) {
+                const el = document.getElementById(id);
+                if (el) el.remove();
+            }
+
+            // --- AUTH TOGGLE & SUBMIT LOGIC ---
+            function setAuthMode(mode) {
+                currentAuthMode = mode;
+                const btnLogin = document.getElementById("tab-btn-login");
+                const btnReg = document.getElementById("tab-btn-register");
+                const submitBtn = document.getElementById("auth-submit-btn");
+
+                if (mode === "login") {
+                    btnLogin.classList.add("active");
+                    btnReg.classList.remove("active");
+                    submitBtn.innerText = "MASUK KE APLIKASI";
+                } else {
+                    btnReg.classList.add("active");
+                    btnLogin.classList.remove("active");
+                    submitBtn.innerText = "DAFTAR SEKARANG & BUAT AKUN";
+                }
+            }
+
+            function handleAuthSubmit() {
+                const username = document
+                    .getElementById("auth-username")
+                    .value.trim();
+                const pin = document.getElementById("auth-pin").value.trim();
+
+                if (!username || !pin) {
+                    alert("Username dan PIN wajib diisi!");
+                    return;
+                }
+
+                if (!appData.registeredUsers) {
+                    appData.registeredUsers = [];
+                }
+
+                if (currentAuthMode === "login") {
+                    const foundUser = appData.registeredUsers.find(
+                        u => u.username.toLowerCase() === username.toLowerCase()
+                    );
+
+                    if (!foundUser) {
+                        alert(
+                            '⚠ AKUN TIDAK DITEMUKAN!\n\nAnda belum membuat akun. Silakan pilih tab "Daftar Akun Baru" terlebih dahulu.'
+                        );
+                        setAuthMode("register");
+                        return;
+                    }
+
+                    if (foundUser.pin !== pin) {
+                        alert(
+                            "❌ PIN yang Anda masukkan salah! Silakan periksa kembali."
+                        );
+                        return;
+                    }
+
+                    showToast("Login berhasil!");
+
+                    if (appData.scriptUrl) {
+                        const payload = {
+                            action: "login",
+                            username: username,
+                            pin: pin
+                        };
+                        fetch(appData.scriptUrl, {
+                            method: "POST",
+                            mode: "no-cors",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload)
+                        }).catch(err => console.error("Auth sync error:", err));
+                    }
+
+                    completeLogin(username);
+                } else if (currentAuthMode === "register") {
+                    const existingUser = appData.registeredUsers.find(
+                        u => u.username.toLowerCase() === username.toLowerCase()
+                    );
+
+                    if (existingUser) {
+                        alert(
+                            "⚠️ Username ini sudah terdaftar! Silakan langsung login atau buat username baru."
+                        );
+                        setAuthMode("login");
+                        return;
+                    }
+
+                    appData.registeredUsers.push({
+                        username: username,
+                        pin: pin
+                    });
+                    saveLocalStore();
+
+                    if (appData.scriptUrl) {
+                        const payload = {
+                            action: "register",
+                            username: username,
+                            pin: pin,
+                            userId: Date.now()
+                        };
+
+                        fetch(appData.scriptUrl, {
+                            method: "POST",
+                            mode: "no-cors",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload)
+                        })
+                            .then(() => {
+                                showToast("Akun berhasil dibuat & tersimpan!");
+                                completeLogin(username);
+                            })
+                            .catch(err => {
+                                console.error("Auth error:", err);
+                                completeLogin(username);
+                            });
+                    } else {
+                        showToast("Akun berhasil dibuat!");
+                        completeLogin(username);
+                    }
+                }
+            }
+
+            function completeLogin(username) {
+                appData.username = username;
+                appData.isLoggedIn = true;
+                saveLocalStore();
+                applyLoggedInState();
+            }
+
+            function applyLoggedInState() {
+                const user = appData.username || "User";
+
+                document.getElementById("user-display-name").innerText =
+                    `Halo, ${user}`;
+                document.getElementById("account-display-name").innerText =
+                    user;
+                document.getElementById("account-username-text").innerText =
+                    user;
+                document.getElementById("edit-username-input").placeholder =
+                    user;
+
+                updateAvatarDisplay();
+
+                const isConnected = !!appData.scriptUrl;
+                document.getElementById("header-sheet-status").innerText =
+                    isConnected ? "Spreadsheet Connected" : "Local Mode";
+                document.getElementById("account-sheet-status").innerText =
+                    isConnected ? "Tersambung Otomatis" : "Mode Standalone";
+
+                document
+                    .getElementById("login-screen")
+                    .classList.remove("active");
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("app-main").style.display = "block";
+
+                switchTab("tab-home");
+                refreshDashboard();
+            }
+
+            function handleLogout() {
+                if (confirm("Apakah Anda yakin ingin keluar?")) {
+                    appData.isLoggedIn = false;
+                    saveLocalStore();
+                    document.getElementById("app-main").style.display = "none";
+                    document.getElementById("login-screen").style.display =
+                        "flex";
+                    document
+                        .getElementById("login-screen")
+                        .classList.add("active");
+                    showToast("Sesi telah diakhiri");
+                }
+            }
+
+            // --- TAB SWITCHING ---
+            function switchTab(tabId, btnEl) {
+                document
+                    .querySelectorAll(".screen")
+                    .forEach(s => s.classList.remove("active"));
+                const target = document.getElementById(tabId);
+                if (target) target.classList.add("active");
+
+                if (btnEl) {
+                    document
+                        .querySelectorAll(".nav-btn")
+                        .forEach(b => b.classList.remove("active"));
+                    btnEl.classList.add("active");
+                }
+
+                if (tabId === "tab-persentase") {
+                    renderAnalysisChart();
+                }
+            }
+
+            // --- REFRESH DASHBOARD & CALCULATIONS ---
+            function refreshDashboard() {
+                let totalMasuk = 0;
+                let totalKeluar = 0;
+
+                appData.transactions.forEach(t => {
+                    if (t.type === "pemasukan") totalMasuk += t.amount;
+                    if (t.type === "pengeluaran") totalKeluar += t.amount;
+                });
+
+                const saldo = totalMasuk - totalKeluar;
+                const pertumbuhan =
+                    totalMasuk > 0
+                        ? ((saldo / totalMasuk) * 100).toFixed(1)
+                        : 0;
+
+                document.getElementById("val-saldo").innerText =
+                    formatRp(saldo);
+                document.getElementById("val-masuk").innerText =
+                    `Rp ${formatRp(totalMasuk)}`;
+                document.getElementById("val-keluar").innerText =
+                    `Rp ${formatRp(totalKeluar)}`;
+                document.getElementById("val-pertumbuhan").innerText =
+                    `${pertumbuhan >= 0 ? "+" : ""}${pertumbuhan}%`;
+
+                updateAntiBorosWidget(totalKeluar);
+                renderTrxList();
+                renderHomeChart(totalMasuk, totalKeluar);
+                saveLocalStore();
+            }
+
+            // --- FITUR ANTI-BOROS LOGIC ---
+            function updateAntiBorosWidget(totalPengeluaran) {
+                const limit = appData.budgetLimit;
+                const banner = document.getElementById("anti-boros-banner");
+                const title = document.getElementById("boros-title");
+                const sub = document.getElementById("boros-sub");
+                const icon = document.getElementById("boros-icon");
+                const progressBar =
+                    document.getElementById("limit-progress-bar");
+                const ratioText = document.getElementById("limit-ratio-text");
+
+                document.getElementById("limit-budget-input").value = limit;
+                ratioText.innerText = `Rp ${formatRp(totalPengeluaran)} / Rp ${formatRp(limit)}`;
+
+                if (totalPengeluaran > limit && limit > 0) {
+                    banner.className = "anti-boros-banner banner-danger";
+                    title.innerText = "🚨 PERINGATAN BOROS!";
+                    sub.innerText = `Pengeluaran melebihi limit hemat sebesar Rp ${formatRp(totalPengeluaran - limit)}!`;
+                    icon.innerText = "⚠️";
+                    progressBar.style.background = "var(--accent-red)";
+                } else {
+                    banner.className = "anti-boros-banner banner-safe";
+                    title.innerText = "🛡️ Status Hemat: SAFE";
+                    sub.innerText = `Sisa kuota belanja aman: Rp ${formatRp(limit - totalPengeluaran)}`;
+                    icon.innerText = "🛡️";
+                    progressBar.style.background = "var(--accent-yellow)";
+                }
+            }
+
+            function saveBudgetLimitSetting() {
+                const val = Number(
+                    document.getElementById("limit-budget-input").value
+                );
+                appData.budgetLimit = val;
+                refreshDashboard();
+                showToast("Limit Anti-Boros diperbarui!");
+            }
+
+            // --- TRANSACTIONS LOGIC ---
+            function saveTransaction() {
+                const type = document.getElementById("trx-tipe").value;
+                const cat =
+                    document.getElementById("trx-kategori").value || "Umum";
+                const amount = Number(
+                    document.getElementById("trx-jumlah").value
+                );
+                const note =
+                    document.getElementById("trx-catatan").value || "-";
+
+                if (!amount || amount <= 0) {
+                    alert("Masukkan jumlah nominal yang valid!");
+                    return;
+                }
+
+                const newTrx = {
+                    id: Date.now(),
+                    username: appData.username,
+                    type: type,
+                    cat: cat,
+                    amount: amount,
+                    date: new Date().toISOString().split("T")[0],
+                    note: note
+                };
+
+                appData.transactions.unshift(newTrx);
+
+                document.getElementById("trx-jumlah").value = "";
+                document.getElementById("trx-catatan").value = "";
+
+                refreshDashboard();
+                switchTab("tab-home");
+                showToast("Transaksi berhasil disimpan!");
+
+                if (appData.scriptUrl) {
+                    syncTransactionToSpreadsheet(newTrx);
+                }
+            }
+
+            function renderTrxList() {
+                const listContainer =
+                    document.getElementById("recent-trx-list");
+                listContainer.innerHTML = "";
+
+                if (appData.transactions.length === 0) {
+                    listContainer.innerHTML =
+                        '<p style="text-align:center; font-size:12px; color:#94a3b8; padding:10px;">Belum ada transaksi.</p>';
+                    return;
+                }
+
+                appData.transactions.slice(0, 5).forEach(t => {
+                    const isMasuk = t.type === "pemasukan";
+                    const icon = isMasuk ? "📥" : "📤";
+                    const iconBg = isMasuk ? "icon-in" : "icon-out";
+                    const sign = isMasuk ? "+" : "-";
+                    const colorClass = isMasuk ? "green" : "red";
+
+                    listContainer.innerHTML += `
+        <div class="trx-item">
+          <div class="trx-left">
+            <div class="trx-icon-bg ${iconBg}">${icon}</div>
+            <div>
+              <div class="trx-title">${t.cat}</div>
+              <div class="trx-date">${t.date} • ${t.note}</div>
+            </div>
+          </div>
+          <div class="trx-right">
+            <div class="trx-val amount ${colorClass}">${sign} Rp ${formatRp(t.amount)}</div>
+            <span class="badge-cat">${t.type}</span>
+          </div>
+        </div>
+      `;
+                });
+            }
+
+            // --- CHARTS LOGIC ---
+            function renderHomeChart(masuk, keluar) {
+                const ctx = document
+                    .getElementById("chartHomeDoughnut")
+                    .getContext("2d");
+                if (chartDoughnutInstance) chartDoughnutInstance.destroy();
+
+                const total = masuk + keluar;
+                const pctMasuk =
+                    total > 0 ? Math.round((masuk / total) * 100) : 50;
+                const pctKeluar =
+                    total > 0 ? Math.round((keluar / total) * 100) : 50;
+
+                chartDoughnutInstance = new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels: [
+                            `Masuk (${pctMasuk}%)`,
+                            `Keluar (${pctKeluar}%)`
+                        ],
+                        datasets: [
+                            {
+                                data: [masuk || 1, keluar || 1],
+                                backgroundColor: ["#22c55e", "#ef4444"],
+                                borderWidth: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: "right" } }
+                    }
+                });
+            }
+
+            function renderAnalysisChart() {
+                const ctx = document
+                    .getElementById("chartAnalysisBar")
+                    .getContext("2d");
+                if (chartBarInstance) chartBarInstance.destroy();
+
+                let totalMasuk = 0;
+                let totalKeluar = 0;
+                let catTotals = {};
+
+                appData.transactions.forEach(t => {
+                    if (t.type === "pemasukan") totalMasuk += t.amount;
+                    if (t.type === "pengeluaran") {
+                        totalKeluar += t.amount;
+                        catTotals[t.cat] = (catTotals[t.cat] || 0) + t.amount;
+                    }
+                });
+
+                chartBarInstance = new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: ["Pemasukan", "Pengeluaran"],
+                        datasets: [
+                            {
+                                label: "Total Nominal (Rp)",
+                                data: [totalMasuk, totalKeluar],
+                                backgroundColor: ["#22c55e", "#ef4444"],
+                                borderRadius: 8
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+
+                const breakdownEl = document.getElementById(
+                    "category-breakdown-list"
+                );
+                breakdownEl.innerHTML = "";
+
+                for (let cat in catTotals) {
+                    const amt = catTotals[cat];
+                    const pct =
+                        totalKeluar > 0
+                            ? ((amt / totalKeluar) * 100).toFixed(1)
+                            : 0;
+
+                    breakdownEl.innerHTML += `
+        <div style="margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; margin-bottom:4px;">
+            <span>${cat}</span>
+            <span>Rp ${formatRp(amt)} (${pct}%)</span>
+          </div>
+          <div class="progress-bg" style="height:6px;">
+            <div class="progress-fill" style="width:${pct}%; background:#ef4444;"></div>
+          </div>
+        </div>
+      `;
+                }
+            }
+
+            // --- SPREADSHEET SYNC LOGIC ---
+            function syncTransactionToSpreadsheet(trx) {
+                if (!appData.scriptUrl) return;
+
+                const payload = {
+                    action: "add_trx",
+                    id: trx.id,
+                    username: trx.username,
+                    type: trx.type,
+                    cat: trx.cat,
+                    amount: trx.amount,
+                    date: trx.date,
+                    note: trx.note
+                };
+
+                fetch(appData.scriptUrl, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                }).catch(err => console.error("Sync error:", err));
+            }
+
+            // --- LOCALSTORAGE ---
+            function saveLocalStore() {
+                localStorage.setItem(
+                    "finansialku_data",
+                    JSON.stringify(appData)
+                );
+            }
+
+            function loadLocalStore() {
+                const saved = localStorage.getItem("finansialku_data");
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        appData = { ...appData, ...parsed };
+                        if (!appData.registeredUsers)
+                            appData.registeredUsers = [];
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
