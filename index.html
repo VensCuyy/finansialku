@@ -1059,7 +1059,7 @@
                                     class="section-title"
                                     style="font-size: 14px"
                                 >
-                                    FinAI Advisor
+                                    PinAI Advisor
                                 </div>
                                 <p style="font-size: 11px; color: #64748b">
                                     Asisten Cerdas Pengelola Keuangan
@@ -1109,7 +1109,7 @@
                         <!-- Chat messages area -->
                         <div class="chat-messages" id="chat-messages-list">
                             <div class="chat-bubble ai">
-                                Halo! Saya <strong>FinAI Advisor</strong>. Ada
+                                Halo! Saya <strong>PinAI Advisor</strong>. Ada
                                 yang bisa saya bantu terkait perencanaan
                                 keuangan, tips hemat, investasi, atau strategi
                                 anggaran hari ini? 😊
@@ -1634,8 +1634,8 @@
 
                 const systemPrompt =
                     "Anda adalah PinAi Advisor, konsultan keuangan pribadi cerdas dari aplikasi FinansialKu. Berikan jawaban yang ramah, taktis, praktis, dan mudah dipahami seputar perencanaan keuangan, budgeting, tips hemat, dan investasi untuk masyarakat Indonesia.";
-                const apiKey = "AQ.Ab8RN6JYemO1oh76DV9LLxX5eQrxjhWK28atlAW0Q_6jub9Wzw"; // Disiapkan oleh runtime Canvas jika ada
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                const apiKey = "AQ.Ab8RN6IpylaBUPBZPAWQ6QVQ_grtqy8NSxnLmik8tdJnrBq_AA"; // Disiapkan oleh runtime Canvas jika ada
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$){apiKey}`;
 
                 const payload = {
                     contents: [{ parts: [{ text: userText }] }],
@@ -1757,7 +1757,7 @@
                     // Sync data login ke Google Sheets jika ada
                     if (
                         appData.scriptUrl &&
-                        !appData.scriptUrl.includes("GANTI_DENGAN_URL")
+                        !appData.scriptUrl.includes("https://script.google.com/macros/s/AKfycbyQRrvBJeOOcdF3_O_q1-Buaqeb0ZCshOU3SIFnnkjA4EWxk109p-TfmR2z84dpAbYj/exec")
                     ) {
                         const payload = {
                             action: "login",
@@ -1798,7 +1798,7 @@
                     // Kirim data akun baru ke Google Sheets
                     if (
                         appData.scriptUrl &&
-                        !appData.scriptUrl.includes("GANTI_DENGAN_URL")
+                        !appData.scriptUrl.includes("https://script.google.com/macros/s/AKfycbyQRrvBJeOOcdF3_O_q1-Buaqeb0ZCshOU3SIFnnkjA4EWxk109p-TfmR2z84dpAbYj/exec")
                     ) {
                         const payload = {
                             action: "register",
@@ -1852,7 +1852,7 @@
 
                 const isConnected =
                     appData.scriptUrl &&
-                    !appData.scriptUrl.includes("GANTI_DENGAN_URL");
+                    !appData.scriptUrl.includes("https://script.google.com/macros/s/AKfycbyQRrvBJeOOcdF3_O_q1-Buaqeb0ZCshOU3SIFnnkjA4EWxk109p-TfmR2z84dpAbYj/exec");
                 document.getElementById("header-sheet-status").innerText =
                     isConnected ? "Spreadsheet Connected" : "Local Mode";
                 document.getElementById("account-sheet-status").innerText =
@@ -2152,7 +2152,7 @@
             function syncTransactionToSpreadsheet(trx) {
                 if (
                     !appData.scriptUrl ||
-                    appData.scriptUrl.includes("GANTI_DENGAN_URL")
+                    appData.scriptUrl.includes("https://script.google.com/macros/s/AKfycbyQRrvBJeOOcdF3_O_q1-Buaqeb0ZCshOU3SIFnnkjA4EWxk109p-TfmR2z84dpAbYj/exec")
                 )
                     return;
 
