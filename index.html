@@ -1633,8 +1633,8 @@
                 const loadingId = appendChatLoading();
 
                 const systemPrompt =
-                    "Anda adalah FinAI Advisor, konsultan keuangan pribadi cerdas dari aplikasi FinansialKu. Berikan jawaban yang ramah, taktis, praktis, dan mudah dipahami seputar perencanaan keuangan, budgeting, tips hemat, dan investasi untuk masyarakat Indonesia.";
-                const apiKey = ""; // Disiapkan oleh runtime Canvas jika ada
+                    "Anda adalah PinAi Advisor, konsultan keuangan pribadi cerdas dari aplikasi FinansialKu. Berikan jawaban yang ramah, taktis, praktis, dan mudah dipahami seputar perencanaan keuangan, budgeting, tips hemat, dan investasi untuk masyarakat Indonesia.";
+                const apiKey = "AQ.Ab8RN6JYemO1oh76DV9LLxX5eQrxjhWK28atlAW0Q_6jub9Wzw"; // Disiapkan oleh runtime Canvas jika ada
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
 
                 const payload = {
@@ -1685,7 +1685,7 @@
                 const bubble = document.createElement("div");
                 bubble.id = id;
                 bubble.className = "chat-bubble ai";
-                bubble.innerText = "FinAI sedang berpikir... 🤖";
+                bubble.innerText = "PinAI sedang berpikir... 🤖";
                 chatList.appendChild(bubble);
                 chatList.scrollTop = chatList.scrollHeight;
                 return id;
